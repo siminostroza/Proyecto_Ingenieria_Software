@@ -75,11 +75,11 @@ public class User {
     private String correo;
 
     @PastOrPresent(message = "La fecha de registro no puede ser futura")
-    private LocalDate fechaRegistro;
+    private LocalDate fechaDeRegistro;
 
     // Método para asignar la fecha automáticamente antes de guardar en la DB
     @PrePersist
     protected void onCreate() {
-        this.fechaRegistro = LocalDate.now();
+        this.fechaDeRegistro = LocalDate.now();
     }
 }

@@ -18,8 +18,8 @@ El proyecto aborda todo el ciclo de vida de una reparación: desde la cotizació
 ## 👥 Equipo de Desarrollo (Integrantes)
 | Nombre | Rol / Especialidad | GitHub |
 | :--- | :--- |
-| **[Catalina Lobos]** | [@usuario1](https://github.com/usuario1) |
-| **[Gabriel Sandoval]** | [@usuario2](https://github.com/usuario2) |
+| **[Catalina Lobos]** | [@Shany-Ghost](https://github.com/Shany-Ghost) |
+| **[Gabriel Sandoval]** | [@Sandy-Yera](https://github.com/Sandy-Yera) |
 | **[Simón Inostroza]** | [@siminostroza](https://github.com/siminostroza) |
 
 ---

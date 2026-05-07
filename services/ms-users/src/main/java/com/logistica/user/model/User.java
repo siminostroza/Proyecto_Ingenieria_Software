@@ -34,6 +34,9 @@ public class User {
     // Si el usuario hace un Post o Put incluye la ID, no podrá ser modificada y no
     // lanzará error de lectura
     // Además asegura que siempre se genere automaticamente la ID
+
+    // ------ IMPORTANTE ---------
+    // ESTE ID DEBE SER AUTOGENERADO POR EL MS-AUTH, ESTE CODIGO DEBE SER MODIFICADO
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 

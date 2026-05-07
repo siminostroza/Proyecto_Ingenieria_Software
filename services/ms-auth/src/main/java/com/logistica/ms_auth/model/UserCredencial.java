@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "UserCredencial")
 public class UserCredencial {
     @NotNull()
-    private Long id; // Identico a ms-user
+    private Long id; // Id autogenerado
 
     @NotBlank()
     private String username;

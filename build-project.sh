@@ -33,6 +33,3 @@ else
     echo "❌ Error: La compilación falló. Revisa los logs arriba."
     exit 1
 fi
-
-echo "----------------------------------------------------"
-echo "✅Proceso terminado. Ya puedes usar docker-compose."

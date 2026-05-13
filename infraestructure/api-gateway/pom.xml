@@ -16,7 +16,7 @@
     <description>API Gateway con Java 25</description>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>21</java.version>
         <spring-cloud.version>2025.0.2</spring-cloud.version>
     </properties>
 

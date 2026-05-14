@@ -28,33 +28,89 @@ services:
     networks:
       - edificios-network
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: brm-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - edificios-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: brm-kafka
+    ports:
+      - "9092:9092" #dirección que uso yo externamente
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181 #dirección que usa para hablar con zookeeper
+      # Configuración para que funcione tanto dentro como fuera de Docker
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - edificios-network
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   eureka-server:
-    build: ../../infraestructure/eureka-server # Docker lo compilará si hay un Dockerfile
+    build: ../../infraestructure/eureka-server
     container_name: logistica-eureka
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     ports:
       - "8761:8761"
     networks:
       - edificios-network
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   
-  api-gateway:
-    build: ../../infraestructure/api-gateway # Ruta a tu carpeta del Gateway
-    container_name: brm-api-gateway
+
+  config-server:
+    build: ../../infraestructure/config-server
+    container_name: brm-config-server
     ports:
-      - "8080:8080"
+      - "8888:8888"
+    volumes:
+      - ../../config-repo:/app/config-repo # Conecta tu carpeta real con la del contenedor
     environment:
+      - SPRING_PROFILES_ACTIVE=native,docker # Refuerza que use la carpeta local
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
-      - SPRING_PROFILES_ACTIVE=docker
     depends_on:
       eureka-server:
-        condition: service_healthy # Espera a que Eureka esté 100% listo
+        condition: service_healthy
+    networks:
+      - edificios-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build: ../../infraestructure/api-gateway
+    container_name: brm-api-gateway
+    ports:
+      - "9090:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      # Esta línea le dice al Gateway dónde ir a buscar su configuración al arrancar
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy # <--- IMPORTANTE: Espera al Config Server
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
@@ -63,7 +119,9 @@ services:
     networks:
       - edificios-network
 
+
   # lentamente se agregarán más servicios en orden de encendido
+  # Dependencia a config-server 
 
 networks:
   edificios-network:

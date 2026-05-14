@@ -1,0 +1,14 @@
+# Esta configuración la recibirán TODOS los servicios automáticamente
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka/
+  instance:
+    # Crucial para Docker: usa la IP en lugar del nombre del contenedor
+    # Esto evita que los servicios no se encuentren entre sí en la red bridge
+    prefer-ip-address: true 
+
+spring:
+  kafka:
+    # Centralizamos Kafka aquí para que Service-Log y otros lo hereden de una vez
+    bootstrap-servers: kafka:29092

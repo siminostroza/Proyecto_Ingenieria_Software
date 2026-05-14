@@ -1,73 +1,7 @@
-server:
-  port: 8080
-
 spring:
   application:
     name: api-gateway
-  cloud:
-    gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true # Recomendado para evitar errores de mayúsculas en las URLs
-      
-      # MEJORA: Filtro GLOBAL para todos los 17 servicios
-      default-filters:
-        - AddRequestHeader=X-Trace-Id, ${random.uuid}
-
-      routes:
-        # RUTA PARA USUARIOS (Corregida)
-        # Gestión de perfiles
-        - id: ms-users
-          uri: lb://ms-users
-          predicates:
-            - Path=/api/users/**
-        
-        # --- SECCIÓN POR INTEGRAR (Comentados) ---
-        #    (El resto se harán por automatico)
-
-        # 2. Seguridad y Autenticación (Prioridad 1 para el Login)
-        #- id: service-auth
-        #  uri: lb://service-auth
-        #  predicates:
-        #    - Path=/api/auth/**
-
-        # 3. Cerebro de Permisos (RBAC)
-        #- id: service-security
-        #  uri: lb://service-security
-        #  predicates:
-        #    - Path=/api/security/**
-
-        # 4. Orquestador de Mapas y Geofencing
-        #- id: ms-logistics
-        #  uri: lb://ms-logistics
-        #  predicates:
-        #    - Path=/api/logistics/**
-
-        # 5. Gestión de Reparaciones (Core)
-        #- id: ms-workorders
-        #  uri: lb://ms-workorders
-        #  predicates:
-        #    - Path=/api/workorders/**
-
-        # 6. Auditoría de Trazabilidad (Función Especial)
-        #- id: service-logs
-        #  uri: lb://service-logs
-        #  predicates:
-        #    - Path=/api/logs/**
-
-eureka:
-  client:
-    service-url:
-      # CAMBIO CRUCIAL: 'eureka-server' en lugar de 'localhost'
-      defaultZone: http://eureka-server:8761/eureka/
-
-# Actuator: Necesario para el "condition: service_healthy"
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health
-  endpoint:
-    health:
-      show-details: always
+  config:
+    import: "optional:configserver:http://config-server:8888/" # Esto también puede ir aquí si no se pasa por Docker
+  profiles:
+    active: docker # O el perfil que estés usando

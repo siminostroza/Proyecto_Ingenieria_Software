@@ -1,0 +1,14 @@
+server:
+    port: 8888
+
+spring:
+    application:
+        name: config-server
+    profiles:
+        active: native # Esto le dice: "Busca en una carpeta local, no en Internet"
+    cloud:
+        config:
+        server:
+            native:
+            # Esta ruta es la que usará DENTRO del contenedor Docker
+            search-locations: file:///app/config-repo

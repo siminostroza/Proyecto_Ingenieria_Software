@@ -13,7 +13,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +24,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "users")
 public class User {
+    /*
+    id
+    rut
+    dv
+    nombres
+    telefono
+    correo
+    */
     @Id
     @NotNull(message = "El ID es obligatorio")
     private Long id;
@@ -65,13 +72,4 @@ public class User {
     @Email(message = "Debe ingresar un formato de correo válido")
     @Column(nullable = false, unique = true)
     private String correo;
-
-    @PastOrPresent(message = "La fecha de registro no puede ser futura")
-    private LocalDate fechaDeRegistro;
-
-    // Método para asignar la fecha automáticamente antes de guardar en la DB
-    @PrePersist
-    protected void onCreate() {
-        this.fechaDeRegistro = LocalDate.now();
-    }
 }

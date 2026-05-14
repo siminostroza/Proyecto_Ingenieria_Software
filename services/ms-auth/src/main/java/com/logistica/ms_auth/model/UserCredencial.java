@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,16 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "UserCredencial")
 public class UserCredencial {
+    /*
+    id_user
+    username
+    is_activa
+    last_login
+    
+    */
+
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // Aquí matamos 2 pajaros de 1 tiro
@@ -42,8 +53,9 @@ public class UserCredencial {
 
     private Timestamp last_login;
 
+    @PrePersist
     protected void onCreate(){
-        is_active = true;
-        last_login = new Timestamp(System.currentTimeMillis());
+        this.is_active = true;
+        this.last_login = new Timestamp(System.currentTimeMillis());
     }
 }

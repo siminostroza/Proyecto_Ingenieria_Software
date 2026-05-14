@@ -26,15 +26,11 @@ public class UserCredencial {
     username
     is_activa
     last_login
-    
     */
-
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     // Aquí matamos 2 pajaros de 1 tiro
-    // Si el usuario hace un Post o Put incluye la ID, no podrá ser modificada y no
+    // Si el usuario hace un Post o Put incluyendo la ID, no podrá ser modificada y no
     // lanzará error de lectura
     // Además asegura que siempre se genere automaticamente la ID
 

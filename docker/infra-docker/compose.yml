@@ -85,6 +85,7 @@ services:
       - ../../config-repo:/app/config-repo # Conecta tu carpeta real con la del contenedor
     environment:
       - SPRING_PROFILES_ACTIVE=native,docker # Refuerza que use la carpeta local
+      - SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS=file:/app/config-repo/ # Para que sepa donde están los archivos
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
     depends_on:
       eureka-server:
@@ -106,6 +107,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       # Esta línea le dice al Gateway dónde ir a buscar su configuración al arrancar
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
     depends_on:
       eureka-server:
         condition: service_healthy

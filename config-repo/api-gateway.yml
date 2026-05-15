@@ -63,6 +63,7 @@ eureka:
     register-with-eureka: true
   instance:
     prefer-ip-address: true # Recomendado en Docker para evitar problemas de resolución de nombres
+    hostname: api-gateway
 
 # Actuator: Configuración para el monitoreo y healthcheck de Docker
 management:

@@ -14,7 +14,8 @@ printf "${GREEN}Iniciando compilación masiva de microservicios (Limpieza y Empa
 # Lista de rutas (Se agregan separadas por espacio)
 # Adaptado para ser compatible con el entorno Docker (sh/dash)
 SERVICES="
-infraestructure/eureka-server 
+infraestructure/eureka-server
+infraestructure/config-server 
 infraestructure/api-gateway
 "
 # Próximos servicios a habilitar:

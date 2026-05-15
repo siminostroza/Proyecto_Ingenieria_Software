@@ -121,6 +121,19 @@ services:
     networks:
       - edificios-network
 
+  ms-auth:
+    build: ../../services/ms-auth
+    container_name: brm-ms-auth
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+    networks:
+      - edificios-network
 
   # lentamente se agregarán más servicios en orden de encendido
   # Dependencia a config-server 

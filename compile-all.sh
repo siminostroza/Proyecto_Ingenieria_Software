@@ -17,10 +17,8 @@ SERVICES="
 infraestructure/eureka-server
 infraestructure/config-server 
 infraestructure/api-gateway
+services/ms-auth
 "
-# Próximos servicios a habilitar:
-# services/ms-users
-# services/ms-logistics
 
 for SERVICE in $SERVICES; do
     printf "${GREEN}----------------------------------------------------${NC}\n"

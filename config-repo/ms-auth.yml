@@ -1,0 +1,13 @@
+server:
+  port: 8081 #y así sucesivamente....
+
+spring:
+  datasource:
+    # Usamos el nombre del servicio de red de MySQL y la DB del init.sql
+    url: jdbc:mysql://logistica-mysql:3306/db_service_auth?createDatabaseIfNotExist=true
+    username: app_user
+    password: "1234"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

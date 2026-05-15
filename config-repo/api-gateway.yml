@@ -14,21 +14,21 @@ spring:
         - AddRequestHeader=X-Trace-Id, ${random.uuid}
 
       routes:
+      # 1. Seguridad y Autenticación (Prioridad 1 para el Login)
+        - id: ms-auth
+          uri: lb://ms-auth
+          predicates:
+            - Path=/api/auth/**
+
         # RUTA PARA USUARIOS (Activa)
         # Gestión de perfiles
-        - id: ms-users
-          uri: lb://ms-users
-          predicates:
-            - Path=/api/users/**
+        #- id: ms-users
+        #  uri: lb://ms-users
+        #  predicates:
+        #    - Path=/api/users/**
         
         # --- SECCIÓN POR INTEGRAR (Comentados para evitar errores de 503 hasta que existan) ---
         # Solo debes quitar el '#' cuando el microservicio esté en ejecución en Docker
-
-        # 2. Seguridad y Autenticación (Prioridad 1 para el Login)
-        #- id: service-auth
-        #  uri: lb://service-auth
-        #  predicates:
-        #    - Path=/api/auth/**
 
         # 3. Cerebro de Permisos (RBAC)
         #- id: service-security

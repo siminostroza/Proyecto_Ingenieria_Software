@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class UserCredencialService {
     private final UserCredencialRepository userCredencialRepository;
     private final PasswordEncoder passwordEncoder;
+    private final KafkaLogProducer logProducer; // Inyección limpia del productor de logs vía Lombok
 
     /*
      * CRUD
@@ -49,7 +50,10 @@ public class UserCredencialService {
     // Encontrar un User Por su ID
     public UserCredencialResponseDTO encontrarUserCredencialId(Long id) {
         return convertirAResponseDTO(userCredencialRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró al usuario con la id: " + id)));
+                .orElseThrow(() -> {
+                    logProducer.sendLog("WARN", "Intento fallido de buscar usuario inexistente con ID: " + id);
+                    return new EntityNotFoundException("No se encontró al usuario con la id: " + id);
+                }));
     }
 
     // --- ACTUALIZAR y CREAR ---
@@ -61,6 +65,7 @@ public class UserCredencialService {
     @Transactional
     public UserCredencialResponseDTO crearUserCredencial(UserCredencialRegisterDTO dto) {
         if (userCredencialRepository.existsByUsername(dto.getUsername())) {
+            logProducer.sendLog("WARN", "Conflicto al crear usuario. El Username ya existe: " + dto.getUsername());
             throw new EntityConflictException("Ya existe el Username: " + dto.getUsername());
         }
 
@@ -71,6 +76,8 @@ public class UserCredencialService {
 
         UserCredencial guardado = userCredencialRepository.save(userCredencial);
 
+        logProducer.sendLog("INFO", "Usuario creado exitosamente con Username: " + guardado.getUsername());
+
         // Guardamos el DTO en la base de datos
         return convertirAResponseDTO(guardado);
     }
@@ -79,13 +86,17 @@ public class UserCredencialService {
     public UserCredencialResponseDTO actualizarUserCredencial(Long id, UserCredencialRegisterDTO dto) {
         // Verificamos que el usuario a actualizar exista realmente
         UserCredencial usuarioExistente = userCredencialRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No se encontró al usuario con la id: " + id));
+                .orElseThrow(() -> {
+                    logProducer.sendLog("WARN", "Intento fallido de actualizar usuario inexistente con ID: " + id);
+                    return new EntityNotFoundException("No se encontró al usuario con la id: " + id);
+                });
 
         // 2. Validación de Username duplicado por OTRO usuario:
         // Si cambió su username, verificamos que el nuevo no esté tomado por alguien
         // más
         if (!usuarioExistente.getUsername().equals(dto.getUsername()) &&
                 userCredencialRepository.existsByUsername(dto.getUsername())) {
+            logProducer.sendLog("WARN", "Conflicto al actualizar ID " + id + ". El Username '" + dto.getUsername() + "' ya está ocupado.");
             throw new EntityConflictException(
                     "El Username '" + dto.getUsername() + "' ya está en uso por otro usuario.");
         }
@@ -97,6 +108,8 @@ public class UserCredencialService {
             usuarioExistente.setIsActive(dto.getIsActive());
         }
 
+        logProducer.sendLog("INFO", "Usuario con ID " + id + " actualizado exitosamente.");
+
         // Al estar utilizando "@Transactional" no necesitamos usar el metodo save del
         // repository
         return convertirAResponseDTO(usuarioExistente);
@@ -105,10 +118,12 @@ public class UserCredencialService {
     // --- Eliminar ---
     public void eliminarUserCredencial(Long id) {
         if (!userCredencialRepository.existsById(id)) {
+            logProducer.sendLog("WARN", "Intento fallido de eliminar usuario inexistente con ID: " + id);
             throw new EntityNotFoundException("No se encontró al usuario con la id: " + id);
         }
 
         userCredencialRepository.deleteById(id);
+        logProducer.sendLog("INFO", "Usuario con ID " + id + " fue eliminado del sistema.");
     }
 
     // ---- codigo muy importante y necesario para poder transformar una objeto

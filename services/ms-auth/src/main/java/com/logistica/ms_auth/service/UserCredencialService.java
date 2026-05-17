@@ -5,11 +5,15 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.logistica.ms_auth.client.UserClient;
 import com.logistica.ms_auth.dto.UserCredencialRegisterDTO;
 import com.logistica.ms_auth.dto.UserCredencialResponseDTO;
 import com.logistica.ms_auth.exception.entity.*;
 import com.logistica.ms_auth.model.UserCredencial;
 import com.logistica.ms_auth.repository.UserCredencialRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -19,6 +23,14 @@ public class UserCredencialService {
     private final UserCredencialRepository userCredencialRepository;
     private final PasswordEncoder passwordEncoder;
     private final KafkaLogProducer logProducer; // Inyección limpia del productor de logs vía Lombok
+    private final HttpServletRequest request; // Para capturar el Trace Id
+    private final UserClient userClient;
+
+    public void registrarCredenciales(Long id, String username, String password) {
+        String traceId = request.getHeader("X-Trace-Id");
+
+        Boolean existeUser = userClient.verificarExistenciaUser(id, null).getBody();
+    }
 
     /*
      * CRUD

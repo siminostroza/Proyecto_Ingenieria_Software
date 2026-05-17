@@ -22,10 +22,10 @@ spring:
 
         # RUTA PARA USUARIOS (Activa)
         # Gestión de perfiles
-        #- id: ms-users
-        #  uri: lb://ms-users
-        #  predicates:
-        #    - Path=/api/users/**
+        - id: ms-users
+          uri: lb://ms-users
+          predicates:
+            - Path=/api/users/**
 
         # --- SECCIÓN POR INTEGRAR (Comentados para evitar errores de 503 hasta que existan) ---
         # Solo debes quitar el '#' cuando el microservicio esté en ejecución en Docker

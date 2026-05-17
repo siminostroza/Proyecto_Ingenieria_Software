@@ -38,5 +38,4 @@ public class UserRegisterDTO {
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "Debe ingresar un formato de correo válido")
     private String correo;
-
 }

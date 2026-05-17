@@ -1,7 +1,11 @@
 package com.logistica.user.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
@@ -36,7 +40,15 @@ public class User {
     // - unique = true <- El dato debe ser unico e irrepetible, utilizado para los
     // datos mas sensibles
     @Id
-    @NotNull(message = "El ID es obligatorio")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // Aquí matamos 2 pajaros de 1 tiro
+    // Si el usuario hace un Post o Put incluye la ID, no podrá ser modificada y no
+    // lanzará error de lectura
+    // Además asegura que siempre se genere automaticamente la ID
+
+    // ------ IMPORTANTE ---------
+    // ESTE ID DEBE SER AUTOGENERADO POR EL MS-AUTH, ESTE CODIGO DEBE SER MODIFICADO
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @NotNull(message = "El RUT es obligatorio")

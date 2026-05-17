@@ -1,41 +1,8 @@
-# 1. Identidad del Microservicio
-# - Este es el nombre que identificará el eureka
+server:
+  port: 8083
+
 spring:
   application:
     name: ms-users
-
-  # 3. Configuración de Base de Datos MySQL
-  datasource:
-    url: jdbc:mysql://localhost:3306/db_users?createDatabaseIfNotExist=true&serverTimezone=UTC
-    username: root
-    password: root
-
-  # 4. Configuración de JPA / Hibernate
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-
-# 2. Puerto de ejecución
-server:
-  port: 8082
-
-# 5. Registro en el Servidor Eureka
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-  instance:
-    prefer-ip-address: true
-    hostname: localhost
-
-# 6. Configuración de Feign (Opcional pero recomendada)
-logging:
-  level:
-    example:
-      ms-users:
-        client:
-          StockClient: DEBUG
+  config:
+    import: "optional:configserver:http://localhost:8888/"

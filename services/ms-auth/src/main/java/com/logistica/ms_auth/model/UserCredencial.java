@@ -13,6 +13,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,16 +33,8 @@ public class UserCredencial {
      */
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // Aquí matamos 2 pajaros de 1 tiro
-    // Si el usuario hace un Post o Put incluye la ID, no podrá ser modificada y no
-    // lanzará error de lectura
-    // Además asegura que siempre se genere automaticamente la ID
-
-    // ------ IMPORTANTE ---------
-    // ESTE ID DEBE SER AUTOGENERADO POR EL MS-AUTH, ESTE CODIGO DEBE SER MODIFICADO
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long id; // Id autogenerado
+    @NotNull(message = "El ID es obligatorio")
+    private Long id; // Id asignado por el ms-users
 
     @Column(unique = true, nullable = false)
     @NotBlank(message = "El username es obligatorio")

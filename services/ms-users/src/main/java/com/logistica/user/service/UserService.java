@@ -128,6 +128,9 @@ public class UserService {
         return "Hay " + totalUsuarios + " usuarios registrados";
     }
 
+    // ---------------- METODOS OPENFEIGN ------------------------------
+
+    // ---------------- METODOS UTILITARIOS ---------------------------
     public UserResponseDTO convertirAResponseDTO(User user) {
         UserResponseDTO response = new UserResponseDTO();
         response.setId(user.getId());

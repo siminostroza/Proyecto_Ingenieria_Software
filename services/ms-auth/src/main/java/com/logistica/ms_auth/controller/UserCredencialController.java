@@ -41,7 +41,29 @@ public class UserCredencialController {
         }
     }
 
-    // -- Existe User by Id
+    // -- Existe User
+    // @GetMapping("/existe/{id}")
+    // // Cambiamos de PathVariable a RequestParam, esto facilitará la conexion con
+    // // OpenFeign
+    // public ResponseEntity<Boolean> existeUser(
+    // // Asignamos el parametro "required" para que no obligue a usar ambos
+    // parametros
+    // // en la URL
+    // @RequestParam(required = false) Long id,
+    // @RequestParam(required = false) String username) {
+    // if (id != null) {
+    // return ResponseEntity.ok(userCredencialService.existeUserCredencialId(id));
+    // }
+    // if (username != null) {
+    // return
+    // ResponseEntity.ok(userCredencialService.existeUserCredencialUsername(username));
+    // }
+
+    // logProducer.sendLog("WARN",
+    // "Petición a /existe rechazada: No se enviaron parámetros de búsqueda.");
+    // throw new EntityBadRequestException("Debes enviar un id o un username");
+    // }
+
     @GetMapping("/existe/{id}")
     // Cambiamos de PathVariable a RequestParam, esto facilitará la conexion con
     // OpenFeign

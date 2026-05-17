@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.logistica.ms_auth.exception.entity.EntityBadRequestException;
 import com.logistica.ms_auth.exception.entity.EntityConflictException;
+import com.logistica.ms_auth.exception.entity.EntityCreationException;
 import com.logistica.ms_auth.exception.entity.EntityNotFoundException;
 
 @RestControllerAdvice
@@ -52,6 +53,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
+    // ---- USER BAD REQUEST ----
     @ExceptionHandler(EntityBadRequestException.class)
     public ResponseEntity<Object> handleUserCredencialBadRequest(EntityBadRequestException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -60,6 +62,17 @@ public class GlobalExceptionHandler {
         body.put("status", HttpStatus.BAD_REQUEST.value());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    // ---- USER CREATION ERROR ----
+    @ExceptionHandler(EntityCreationException.class)
+    public ResponseEntity<Object> handleUserCreationError(EntityCreationException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+        body.put("status", HttpStatus.CONFLICT.value());
+
+        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
     }
 
     /*

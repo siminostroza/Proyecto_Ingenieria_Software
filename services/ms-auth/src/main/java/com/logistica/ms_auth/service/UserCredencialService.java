@@ -6,8 +6,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.logistica.ms_auth.client.UserClient;
+import com.logistica.ms_auth.dto.UserResponseDTO;
+import com.logistica.ms_auth.dto.RegistroCompletoDTO;
 import com.logistica.ms_auth.dto.UserCredencialRegisterDTO;
 import com.logistica.ms_auth.dto.UserCredencialResponseDTO;
+import com.logistica.ms_auth.dto.UserRegisterDTO;
 import com.logistica.ms_auth.exception.entity.*;
 import com.logistica.ms_auth.model.UserCredencial;
 import com.logistica.ms_auth.repository.UserCredencialRepository;
@@ -24,12 +27,10 @@ public class UserCredencialService {
     private final PasswordEncoder passwordEncoder;
     private final KafkaLogProducer logProducer; // Inyección limpia del productor de logs vía Lombok
     private final HttpServletRequest request; // Para capturar el Trace Id
-    private final UserClient userClient;
+    private final UserClient userClient; // Aquí va la conexión con el cliente
 
     public void registrarCredenciales(Long id, String username, String password) {
-        String traceId = request.getHeader("X-Trace-Id");
 
-        Boolean existeUser = userClient.verificarExistenciaUser(id, null).getBody();
     }
 
     /*
@@ -83,6 +84,7 @@ public class UserCredencialService {
 
         // Generaremos el Objeto con los datos del dto
         UserCredencial userCredencial = new UserCredencial();
+        userCredencial.setId(dto.getId()); // <-- IMPORTANTE: Recibimos el ID generado por ms-users
         userCredencial.setUsername(dto.getUsername());
         userCredencial.setPassword(passwordEncoder.encode(dto.getPassword()));
 
@@ -92,6 +94,74 @@ public class UserCredencialService {
 
         // Guardamos el DTO en la base de datos
         return convertirAResponseDTO(guardado);
+    }
+
+    // CREAR UN USUARIO EN EL ECOSISTEMA COMPLETO
+    // Metodo orquestador
+    // El método orquestador utiliza un mapeo simple manual para transferir los
+    // datos del formulario completo (UserCredencialRegisterDTO) hacia el DTO que
+    // procesa la red (UserRegisterDTO):
+
+    // 1.- Pediremos el registro completo
+    // 2.- Lo dividiremos y lo enviaremos a ms-users, si la respuesta es ok seguimos
+    // con el siguiente paso
+    // 3.- Le diremos a Auth que tome el ID autogenerado de ms-users para crear al
+    // ms-auth
+    // 4.- y listo
+    public UserCredencialResponseDTO crearUsuarioCompleto(RegistroCompletoDTO dtoCompleto) {
+        String traceId = (String) request.getAttribute("trace-id"); // Capturamos la trazabilidad de Gateway
+
+        UserRegisterDTO userRegisterDTO = new UserRegisterDTO();
+        userRegisterDTO.setRut(dtoCompleto.getRut());
+        userRegisterDTO.setDv(dtoCompleto.getDv());
+        userRegisterDTO.setPNombre(dtoCompleto.getPNombre());
+        userRegisterDTO.setSNombre(dtoCompleto.getSNombre());
+        userRegisterDTO.setApPat(dtoCompleto.getApPat());
+        userRegisterDTO.setApMat(dtoCompleto.getApMat());
+        userRegisterDTO.setTelefono(dtoCompleto.getTelefono());
+        userRegisterDTO.setCorreo(dtoCompleto.getCorreo());
+
+        // 2. Enviamos el JSON a ms-users vía OpenFeign
+        UserResponseDTO userResponseDTO = userClient.registrarUser(userRegisterDTO).getBody();
+
+        if (userResponseDTO == null || userResponseDTO.getId() == null) {
+            logProducer.sendLog("ERROR",
+                    "Fallo al registrar usuario en ms-users. Respuesta nula o sin ID. TraceId: " + traceId);
+            throw new EntityCreationException("Error al crear el usuario en el sistema de usuarios.");
+        }
+
+        // Capturamos el ID generado por ms-users para usarlo en ms-auth
+        Long generatedUserId = userResponseDTO.getId();
+
+        // 3. Orquestación con Plan de Respaldo para evitar datos huérfanos
+        try {
+            // Creamos el DTO de credenciales local incluyendo el ID generado remotamente
+            UserCredencialRegisterDTO credencialDTO = new UserCredencialRegisterDTO();
+            credencialDTO.setId(generatedUserId); // <-- CRUCIAL: Vinculamos el ID de ms-users
+            credencialDTO.setUsername(dtoCompleto.getUsername());
+            credencialDTO.setPassword(dtoCompleto.getPassword());
+
+            // Este método interno SÍ debe llevar @Transactional (ya que solo impacta la
+            // base de datos de ms-auth)
+            return crearUserCredencial(credencialDTO);
+
+        } catch (Exception e) {
+            // PLAN DE RESPALDO (Acción Compensatoria):
+            // Si ms-auth se cae, explota la BD o el username está duplicado localmente,
+            // borramos de inmediato el usuario que alcanzamos a registrar en ms-users.
+            try {
+                userClient.eliminarUserId(generatedUserId);
+                logProducer.sendLog("WARN", "Compensación ejecutada: Registro limpio en ms-users para ID: "
+                        + generatedUserId + ". TraceId: " + traceId);
+            } catch (Exception ex) {
+                logProducer.sendLog("FATAL", "CRÍTICO: Falló la compensación. ID " + generatedUserId
+                        + " quedó huérfano en ms-users. Detalle: " + ex.getMessage());
+            }
+
+            // Redirigimos la excepción original de negocio
+            throw new EntityConflictException(
+                    "Error interno al procesar las credenciales de seguridad. El registro total fue cancelado.");
+        }
     }
 
     @Transactional

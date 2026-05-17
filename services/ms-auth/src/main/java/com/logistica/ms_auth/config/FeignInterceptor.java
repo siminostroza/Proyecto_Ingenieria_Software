@@ -9,7 +9,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Component
 public class FeignInterceptor implements RequestInterceptor {
-
     @Override
     public void apply(RequestTemplate template) {
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

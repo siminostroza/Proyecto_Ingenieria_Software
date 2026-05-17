@@ -17,6 +17,7 @@ infraestructure/config-server
 infraestructure/api-gateway
 services/ms-auth
 services/ms-logs
+services/ms-users
 "
 
 # --- DETECCIÓN DINÁMICA DE ARGUMENTOS ---

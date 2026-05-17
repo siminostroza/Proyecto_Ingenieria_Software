@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class UserCredencialRegisterDTO {
+    private Long id;
 
     @NotBlank(message = "El username es obligatorio")
     private String username;

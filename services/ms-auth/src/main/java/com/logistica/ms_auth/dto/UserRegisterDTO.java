@@ -8,8 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class RegistroCompletoDTO {
-    // Datos para ms-users (Se mapearán a UserRegisterDTO)
+public class UserRegisterDTO {
     @NotNull(message = "El RUT es obligatorio")
     @Digits(integer = 9, fraction = 0, message = "El RUT debe tener entre 7 y 8 dígitos")
     private Integer rut;
@@ -39,11 +38,4 @@ public class RegistroCompletoDTO {
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "Debe ingresar un formato de correo válido")
     private String correo;
-
-    // Datos específicos de ms-auth
-    @NotBlank(message = "El username es obligatorio")
-    private String username;
-
-    @NotBlank(message = "La contraseña es obligatoria")
-    private String password;
 }

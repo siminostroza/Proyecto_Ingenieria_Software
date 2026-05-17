@@ -11,11 +11,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-//Cambiamos los nombres de las clases de ejemplo: UserConflictException -> a EntityConflictException
-//Para poder escalar mucho más facil
-import com.logistica.ms_auth.exception.userCredencial.EntityBadRequestException;
-import com.logistica.ms_auth.exception.userCredencial.EntityConflictException;
-import com.logistica.ms_auth.exception.userCredencial.EntityNotFoundException;
+import com.logistica.ms_auth.exception.entity.EntityBadRequestException;
+import com.logistica.ms_auth.exception.entity.EntityConflictException;
+import com.logistica.ms_auth.exception.entity.EntityNotFoundException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

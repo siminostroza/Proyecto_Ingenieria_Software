@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.logistica.ms_auth.exception.userCredencial.EntityBadRequestException;
-import com.logistica.ms_auth.model.UserCredencial;
+import com.logistica.ms_auth.dto.UserCredencialRegisterDTO;
+import com.logistica.ms_auth.dto.UserCredencialResponseDTO;
+import com.logistica.ms_auth.exception.entity.EntityBadRequestException;
 import com.logistica.ms_auth.service.UserCredencialService;
 
 import jakarta.validation.Valid;
@@ -28,8 +29,8 @@ public class UserCredencialController {
 
     // --- Listar ---
     @GetMapping()
-    public ResponseEntity<List<UserCredencial>> listar() {
-        List<UserCredencial> listado = userCredencialService.listar();
+    public ResponseEntity<List<UserCredencialResponseDTO>> listar() {
+        List<UserCredencialResponseDTO> listado = userCredencialService.listar();
 
         if (listado.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -58,15 +59,16 @@ public class UserCredencialController {
     }
 
     @PostMapping()
-    public ResponseEntity<UserCredencial> crearUser(@Valid @RequestBody UserCredencial userCredencial) {
+    public ResponseEntity<UserCredencialResponseDTO> crearUser(
+            @Valid @RequestBody UserCredencialRegisterDTO userCredencial) {
         // Arreglamos esto de acá
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(userCredencialService.guardarUserCredencial(userCredencial));
+                .body(userCredencialService.crearUserCredencial(userCredencial));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserCredencial> actualizarUser(
-            @Valid @RequestBody UserCredencial datosActualizados,
+    public ResponseEntity<UserCredencialResponseDTO> actualizarUser(
+            @Valid @RequestBody UserCredencialRegisterDTO datosActualizados,
             @RequestParam Long id) {
         return ResponseEntity.ok(userCredencialService.actualizarUserCredencial(id, datosActualizados));
     }

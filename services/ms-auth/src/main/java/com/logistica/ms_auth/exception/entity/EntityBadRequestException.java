@@ -1,4 +1,4 @@
-package com.logistica.ms_auth.exception.userCredencial;
+package com.logistica.ms_auth.exception.entity;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

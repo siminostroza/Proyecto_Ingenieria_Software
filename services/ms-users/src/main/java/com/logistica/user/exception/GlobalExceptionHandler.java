@@ -7,8 +7,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.logistica.user.exception.user.UserConflictException;
-import com.logistica.user.exception.user.UserNotFoundException;
+import com.logistica.user.exception.entity.EntityBadRequestException;
+import com.logistica.user.exception.entity.EntityConflictException;
+import com.logistica.user.exception.entity.EntityNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -16,23 +17,28 @@ import java.util.Map;
 
 @ControllerAdvice // Indica que esta clase captura excepciones de todos los controladores
 public class GlobalExceptionHandler {
+    @ExceptionHandler(EntityBadRequestException.class)
+    public ResponseEntity<Object> handleUserBadRequest(EntityBadRequestException ex) {
+        // El 'Map' es la construcción de un body para retornarlo
+        Map<String, Object> body = new HashMap<>();
+        // Aquí ingresamos manualmente la información que queremos devolver
+        // Time Stamp para decir tiempo y hora
+        body.put("timestamp", LocalDateTime.now());
 
-    /*
-     * Error en caso de no encontrar la clase User
-     * // Definimos ExceptionHandler para atrapar un error de tipo
-     */
+        // Mensaje para decir que fue lo que ocurrió
+        // Utilizamos el argumento 'ex' para ver el error y obtener el mensaje que
+        // queremos retornar
+        body.put("message", ex.getMessage());
 
-    /*
-     * 
-     * |------------------------|
-     * | ERRORES CON ORIGEN DE -|
-     * | CLASES CREADAS -|
-     * |------------------------|
-     * 
-     */
-    // ---- USER NOT FOUND ----
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Object> handleUserNotFound(UserNotFoundException ex) {
+        // en 'Status' especificamos que tipo de error queremos arrojar
+        body.put("status", HttpStatus.NOT_FOUND.value());
+
+        // Por ultimo tenemos que retornar un ResponseEntity con todo lo contenido
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFound(EntityNotFoundException ex) {
         // El 'Map' es la construcción de un body para retornarlo
         Map<String, Object> body = new HashMap<>();
         // Aquí ingresamos manualmente la información que queremos devolver
@@ -52,8 +58,8 @@ public class GlobalExceptionHandler {
     }
 
     // ---- USER CONFLICT ----
-    @ExceptionHandler(UserConflictException.class)
-    public ResponseEntity<Object> handleUserConflict(UserConflictException ex) {
+    @ExceptionHandler(EntityConflictException.class)
+    public ResponseEntity<Object> handleUserConflict(EntityConflictException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("message", ex.getMessage());

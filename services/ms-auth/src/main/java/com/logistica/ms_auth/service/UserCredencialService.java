@@ -7,12 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.logistica.ms_auth.dto.UserCredencialRegisterDTO;
 import com.logistica.ms_auth.dto.UserCredencialResponseDTO;
-import com.logistica.ms_auth.exception.entity.EntityConflictException;
-import com.logistica.ms_auth.exception.entity.EntityNotFoundException;
+import com.logistica.ms_auth.exception.entity.*;
 import com.logistica.ms_auth.model.UserCredencial;
 import com.logistica.ms_auth.repository.UserCredencialRepository;
-
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -30,6 +28,7 @@ public class UserCredencialService {
      */
 
     // --- LISTAR --- READ
+    @Transactional(readOnly = true)
     public List<UserCredencialResponseDTO> listar() {
         return userCredencialRepository.findAll() // Esto es lo que siempre hemos tenido de toda la vida;
                 .stream() // Abre un flujo de datos
@@ -48,6 +47,7 @@ public class UserCredencialService {
     }
 
     // Encontrar un User Por su ID
+    @Transactional(readOnly = true)
     public UserCredencialResponseDTO encontrarUserCredencialId(Long id) {
         return convertirAResponseDTO(userCredencialRepository.findById(id)
                 .orElseThrow(() -> {
@@ -96,7 +96,8 @@ public class UserCredencialService {
         // más
         if (!usuarioExistente.getUsername().equals(dto.getUsername()) &&
                 userCredencialRepository.existsByUsername(dto.getUsername())) {
-            logProducer.sendLog("WARN", "Conflicto al actualizar ID " + id + ". El Username '" + dto.getUsername() + "' ya está ocupado.");
+            logProducer.sendLog("WARN",
+                    "Conflicto al actualizar ID " + id + ". El Username '" + dto.getUsername() + "' ya está ocupado.");
             throw new EntityConflictException(
                     "El Username '" + dto.getUsername() + "' ya está en uso por otro usuario.");
         }
@@ -116,6 +117,7 @@ public class UserCredencialService {
     }
 
     // --- Eliminar ---
+    @Transactional(readOnly = true)
     public void eliminarUserCredencial(Long id) {
         if (!userCredencialRepository.existsById(id)) {
             logProducer.sendLog("WARN", "Intento fallido de eliminar usuario inexistente con ID: " + id);

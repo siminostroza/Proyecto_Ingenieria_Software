@@ -6,7 +6,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,20 +20,21 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 public class User {
     /*
-    id
-    rut
-    dv
-    nombres
-    telefono
-    correo
-    */
+     * id
+     * rut
+     * dv
+     * nombres
+     * telefono
+     * correo
+     */
 
-
-    //Restriccion que quizá no se conozcan:
+    // Restriccion que quizá no se conozcan:
     // Column(valor) <- Aquí le damos "restricciones" a la base de datos
-    // Aquí nos aseguraremos que al utilizar la base de datos en crudo no generemos filas con datos imposibles para nuestro service
+    // Aquí nos aseguraremos que al utilizar la base de datos en crudo no generemos
+    // filas con datos imposibles para nuestro service
     // - nullable = false <- Nunca puede quedar vacio el dato
-    // - unique = true <- El dato debe ser unico e irrepetible, utilizado para los datos mas sensibles
+    // - unique = true <- El dato debe ser unico e irrepetible, utilizado para los
+    // datos mas sensibles
     @Id
     @NotNull(message = "El ID es obligatorio")
     private Long id;
@@ -52,23 +52,24 @@ public class User {
     @NotBlank(message = "El primer nombre es obligatorio")
     @Size(max = 50)
     @Column(nullable = false)
-    private String pnombre;
+    private String pNombre;
 
     @Size(max = 50)
     @Column(nullable = true)
-    private String snombre; // Puede ser nulo, no lleva @NotBlank
+    private String sNombre; // Puede ser nulo, no lleva @NotBlank
 
     @NotBlank(message = "El apellido paterno es obligatorio")
     @Size(max = 50)
     @Column(nullable = false)
-    private String appat;
+    private String apPat;
 
     @Size(max = 50)
     @Column(nullable = true)
-    private String apmat;
+    private String apMat;
 
     @NotNull(message = "El teléfono no puede estar vacío")
-    @Min(value = 100000000, message = "Número de teléfono inválido")
+    @Digits(integer = 12, fraction = 0)
+    @Column(nullable = false)
     private Integer telefono;
 
     @NotBlank(message = "El correo es obligatorio")

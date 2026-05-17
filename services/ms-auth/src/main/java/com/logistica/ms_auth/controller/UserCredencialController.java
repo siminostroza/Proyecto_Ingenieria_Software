@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.logistica.ms_auth.dto.UserCredencialRegisterDTO;
 import com.logistica.ms_auth.dto.UserCredencialResponseDTO;
 import com.logistica.ms_auth.exception.entity.EntityBadRequestException;
+import com.logistica.ms_auth.service.KafkaLogProducer;
 import com.logistica.ms_auth.service.UserCredencialService;
 
 import jakarta.validation.Valid;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserCredencialController {
     private final UserCredencialService userCredencialService;
+    private final KafkaLogProducer logProducer;
 
     // --- Listar ---
     @GetMapping()
@@ -55,13 +57,14 @@ public class UserCredencialController {
             return ResponseEntity.ok(userCredencialService.existeUserCredencialUsername(username));
         }
 
+        logProducer.sendLog("WARN",
+                "Petición a /existe rechazada: No se enviaron parámetros de búsqueda.");
         throw new EntityBadRequestException("Debes enviar un id o un username");
     }
 
     @PostMapping()
     public ResponseEntity<UserCredencialResponseDTO> crearUser(
             @Valid @RequestBody UserCredencialRegisterDTO userCredencial) {
-        // Arreglamos esto de acá
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userCredencialService.crearUserCredencial(userCredencial));
     }

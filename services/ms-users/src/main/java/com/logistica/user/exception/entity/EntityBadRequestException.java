@@ -1,11 +1,11 @@
-package com.logistica.user.exception.user;
+package com.logistica.user.exception.entity;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
-public class UserConflictException extends RuntimeException {
-    public UserConflictException(String mensaje) {
+public class EntityBadRequestException extends RuntimeException {
+    public EntityBadRequestException(String mensaje) {
         super(mensaje);
     }
 }

@@ -20,27 +20,25 @@ public class UserCredencialService {
 
     private final UserCredencialRepository userCredencialRepository;
     private final PasswordEncoder passwordEncoder;
-    private final KafkaLogProducer logProducer; 
-    private final HttpServletRequest request; 
+    private final KafkaLogProducer logProducer;
+    private final HttpServletRequest request;
 
-    /**
-     * Registra las credenciales de un usuario de forma directa y segura.
-     * Este método es invocado de forma síncrona por ms-users una vez que 
-     * el perfil de negocio ha sido persistido con éxito.
-     */
     @Transactional
     public UserCredencialResponseDTO crearUserCredencial(UserCredencialRegisterDTO dto) {
-        // Extraemos el Trace Id desde el Header real inyectado por el API Gateway
         String traceId = request.getHeader("X-Trace-Id");
+
+        if (dto.getId() == null) {
+            logProducer.sendLog("ERROR", "Intento de crear credencial sin ID de usuario. | TraceId: " + traceId);
+            throw new EntityBadRequestException("El ID del usuario es obligatorio para registrar credenciales.");
+        }
 
         if (userCredencialRepository.existsByUsername(dto.getUsername())) {
             logProducer.sendLog("WARN", "Conflicto de seguridad. El Username ya existe: " + dto.getUsername() + " | TraceId: " + traceId);
             throw new EntityConflictException("El email o username ya se encuentra registrado en el módulo de autenticación.");
         }
 
-        // Construcción de la entidad de seguridad acoplada al ID original
         UserCredencial userCredencial = new UserCredencial();
-        userCredencial.setId(dto.getId()); // ID autogenerado proveniente de ms-users
+        userCredencial.setId(dto.getId());
         userCredencial.setUsername(dto.getUsername());
         userCredencial.setPassword(passwordEncoder.encode(dto.getPassword()));
         userCredencial.setIsActive(true);
@@ -81,7 +79,7 @@ public class UserCredencialService {
     @Transactional
     public UserCredencialResponseDTO actualizarUserCredencial(Long id, UserCredencialRegisterDTO dto) {
         String traceId = request.getHeader("X-Trace-Id");
-        
+
         UserCredencial usuarioExistente = userCredencialRepository.findById(id)
                 .orElseThrow(() -> {
                     logProducer.sendLog("WARN", "Intento fallido de actualizar credencial inexistente con ID: " + id + " | TraceId: " + traceId);

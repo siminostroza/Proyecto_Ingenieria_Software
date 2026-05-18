@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 // CORRECCIÓN: Se agrega el import faltante para que el compilador reconozca el DTO de respuesta
 import com.logistica.user.dto.UserCredencialResponseDTO;
 import com.logistica.user.dto.UserCredencialRegisterDTO;
-import com.logistica.user.dto.UserResponseDTO;
 
 /**
  * CONTRATO DE COMUNICACIÓN SÍNCRONA (OpenFeign)

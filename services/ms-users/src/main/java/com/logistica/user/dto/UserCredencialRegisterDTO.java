@@ -1,7 +1,6 @@
 package com.logistica.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -10,9 +9,7 @@ import lombok.Data;
  */
 @Data
 public class UserCredencialRegisterDTO {
-    
-    @NotNull(message = "El ID compartido es obligatorio")
-    private Long id;         
+    private Long id;
 
     @NotBlank(message = "El username es obligatorio")
     private String username; 

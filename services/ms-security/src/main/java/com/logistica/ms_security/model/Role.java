@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "role")
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank(message = "El nombre del rol es obligatorio")
     private String rolName;
@@ -26,9 +26,9 @@ public class Role {
     private String jsonPermissions;
 
     @PrePersist
-    protected void onCreate(){
-        if (jsonPermissions.isBlank() || jsonPermissions.isEmpty() || jsonPermissions == null) {
-            this.jsonPermissions = new String("[]");
+    public void onCreate() {
+        if (this.permisosJson == null || this.jsonPermissions.isBlank()) {
+            this.permisosJson = "[]"; 
         }
     }
 }

@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "role_assignement")
 public class RoleAssignment {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull(message = "El id del Rol es obligatorio")

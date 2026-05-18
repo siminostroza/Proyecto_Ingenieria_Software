@@ -87,7 +87,7 @@ public class UserService {
 
         try {
             UserCredencialRegisterDTO credencialesDTO = new UserCredencialRegisterDTO();
-            credencialesDTO.setId(guardadoLocal.getId()); 
+            credencialesDTO.setId(guardadoLocal.getId());
             credencialesDTO.setUsername(dto.getCorreo()); 
             credencialesDTO.setPassword(dto.getPassword()); 
 
@@ -132,7 +132,6 @@ public class UserService {
         if (correoCambiado) {
             try {
                 UserCredencialRegisterDTO credencialesDTO = new UserCredencialRegisterDTO();
-                credencialesDTO.setId(actualizado.getId());
                 credencialesDTO.setUsername(actualizado.getCorreo());
                 credencialesDTO.setPassword(dto.getPassword());
 

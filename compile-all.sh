@@ -24,6 +24,10 @@ services/ms-fleet
 services/ms-security
 services/ms-quotes
 services/ms-inventory
+services/ms-payments
+services/ms-billing
+services/ms-logistics
+services/ms-notifications
 "
 
 # --- DETECCIÓN DINÁMICA DE ARGUMENTOS ---

@@ -1,0 +1,49 @@
+server:
+  port: ${PORT:8092} # Puerto correlativo asignado al módulo de facturación
+
+spring:
+  datasource:
+    # Conectado al esquema unificado de facturación y comprobantes
+    url: jdbc:mysql://mysql-db:3306/db_service_billing?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: app_user
+    password: "1234"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+  kafka:
+    # Parámetros para emitir eventos financieros (Ej: factura_emitida, pago_conciliado)
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+# OpenFeign: Manejo seguro de tiempos de espera para comunicarse con ms-payments o ms-users
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+# Telemetría avanzada unificada exclusiva para este módulo contable/relacional
+logging:
+  level:
+    root: INFO
+    com.logistica: DEBUG  # Esencial para ver flujos de facturas, impuestos y cierres de caja
+    org.hibernate.SQL: DEBUG  # Muestra las sentencias SQL ejecutadas de los comprobantes
+    # Compatibilidad y profundidad para Hibernate 6.x (Spring Boot 3.x)
+    org.hibernate.orm.results.graph.AST: TRACE
+    org.hibernate.type.descriptor.jdbc.spi.JdbcTypeRegistry: TRACE

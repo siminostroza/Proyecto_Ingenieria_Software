@@ -19,8 +19,9 @@ public class LogEntity {
     private String serviceName;
     private String level;
 
-    @Column(length = 1000) // Por si mandamos mensajes de error muy largos
+    @Column(length = 1000)
     private String message;
 
+    @Column(length = 50)
     private String timestamp;
 }

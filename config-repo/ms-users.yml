@@ -3,7 +3,6 @@ server:
 
 spring:
   datasource:
-    # Conectado al esquema unificado de usuarios
     url: jdbc:mysql://mysql-db:3306/db_service_users?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: app_user
     password: "1234"
@@ -15,7 +14,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
   kafka:
-    # Mantiene los parámetros específicos del productor (ej: eventos de actualización de perfil)
+    bootstrap-servers: kafka:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -29,11 +28,8 @@ management:
     health:
       show-details: always
 
-# Telemetría avanzada unificada exclusiva para este módulo relacional
 logging:
   level:
-    com.logistica: DEBUG  # <-- Esencial para ver las trazas de tus Controllers y Services de usuarios
+    com.logistica: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.hibernate.orm.results.graph.AST: TRACE
-    org.hibernate.type.descriptor.jdbc.spi.JdbcTypeRegistry: TRACE

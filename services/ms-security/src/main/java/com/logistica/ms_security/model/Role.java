@@ -27,8 +27,8 @@ public class Role {
 
     @PrePersist
     public void onCreate() {
-        if (this.permisosJson == null || this.jsonPermissions.isBlank()) {
-            this.permisosJson = "[]"; 
+        if (this.jsonPermissions == null || this.jsonPermissions.isBlank()) {
+            this.jsonPermissions = "[]"; 
         }
     }
 }

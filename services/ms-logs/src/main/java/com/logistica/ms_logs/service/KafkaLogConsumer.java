@@ -1,8 +1,9 @@
 package com.logistica.ms_logs.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.logistica.ms_logs.model.LogEntity;
 import com.logistica.ms_logs.repository.LogRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class KafkaLogConsumer {
 
     private final LogRepository logRepository;
-    private final ObjectMapper objectMapper; // Para transformar el JSON String a Objeto Java
+    private final ObjectMapper objectMapper;
 
     public KafkaLogConsumer(LogRepository logRepository, ObjectMapper objectMapper) {
         this.logRepository = logRepository;
@@ -20,17 +21,20 @@ public class KafkaLogConsumer {
     @KafkaListener(topics = "queue-logs", groupId = "logs-group")
     public void consumeLog(String messageJson) {
         try {
-            // 1. Parseamos el JSON que viene de Kafka directamente a nuestra Entidad
-            LogEntity logEntity = objectMapper.readValue(messageJson, LogEntity.class);
-            
-            // 2. Guardamos de forma asíncrona en MySQL
+            JsonNode node = objectMapper.readTree(messageJson);
+
+            LogEntity logEntity = new LogEntity();
+            logEntity.setServiceName(node.path("serviceName").asText());
+            logEntity.setLevel(node.path("level").asText());
+            logEntity.setMessage(node.path("message").asText());
+            logEntity.setTimestamp(node.path("timestamp").asText());
+
             logRepository.save(logEntity);
-            
-            // 3. Pintamos en la consola de Docker para verificar visualmente que llegó
-            System.out.println("[Kafka] Log guardado con éxito: " + logEntity.getMessage());
-            
+
+            System.out.println("[Kafka] Log guardado: [" + logEntity.getLevel() + "] " + logEntity.getServiceName() + " - " + logEntity.getMessage());
+
         } catch (Exception e) {
-            System.err.println("Error al procesar el log recibido de Kafka: " + e.getMessage());
+            System.err.println("[Kafka] Error al procesar log: " + e.getMessage());
         }
     }
 }

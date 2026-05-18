@@ -3,8 +3,8 @@ server:
 
 spring:
   datasource:
-    # Ajustado al contenedor central 'mysql-db' y al esquema de flotas
-    url: jdbc:mysql://mysql-db:3306/db_service_fleet??useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    # CORREGIDO: Se elimina el doble '??' para asegurar una conexión JDBC limpia hacia el esquema de flotas
+    url: jdbc:mysql://mysql-db:3306/db_service_fleet?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: app_user
     password: "1234"
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,9 +16,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-  # Soporte para mensajería asíncrona de la flota (coordenadas, alertas, etc.)
+  # Componentes nativos del consumidor y productor para el rastreo de vehículos
   kafka:
-    bootstrap-servers: kafka:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -27,15 +26,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}:${random.value}
+# Toda la configuración de Eureka e IP distribuidas se hereda transparentemente del global
 
 management:
   endpoints:
@@ -46,6 +37,12 @@ management:
     health:
       show-details: always
 
+# Telemetría avanzada unificada exclusiva para este módulo relacional
 logging:
   level:
-    com.logistica.fleet: DEBUG
+    root: INFO
+    com.logistica: DEBUG  # <-- Esencial para ver la lógica de negocio y geolocalización de tus flotas
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.results.graph.AST: TRACE
+    org.hibernate.type.descriptor.jdbc.spi.JdbcTypeRegistry: TRACE

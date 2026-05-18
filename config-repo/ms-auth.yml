@@ -3,8 +3,6 @@ server:
 
 spring:
   datasource:
-    # CORREGIDO: Se cambia 'logistica-mysql' por 'mysql-db' para alinearse con el nombre del servicio en el compose.yml,
-    # permitiendo que el DNS interno de Docker resuelva la conexión a la base de datos de forma correcta.
     url: jdbc:mysql://mysql-db:3306/db_service_auth?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: app_user
     password: "1234"
@@ -16,23 +14,18 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
   kafka:
-    # Nota: bootstrap-servers se hereda del global, pero se mantienen los parámetros específicos del productor
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      # Tolerancia a fallos: reintentos y resiliencia si Kafka tarda en responder en frío
       retries: 3
       properties:
         retry.backoff.ms: 1000
         max.block.ms: 5000
 
-# Vinculación obligatoria para que el microservicio sea visible ante el API Gateway
-# Nota: La configuración base se hereda del archivo global, asegurando el 'prefer-ip-address: true'
 eureka:
   instance:
     prefer-ip-address: true
 
-# Habilitar Actuator para el control de estados en Docker Compose
 management:
   endpoints:
     web:
@@ -42,7 +35,13 @@ management:
     health:
       show-details: always
 
-# Monitoreo interno adaptado al package real reflejado en la ramificación
+# UNIFICADO: Una sola declaración de logging para todo el archivo
 logging:
   level:
+    root: INFO
     com.logistica.ms_auth: DEBUG
+    com.logistica: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.results.graph.AST: TRACE
+    org.hibernate.type.descriptor.jdbc.spi.JdbcTypeRegistry: TRACE

@@ -16,9 +16,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-  # Mensajería asíncrona para notificar quiebres de stock o reservar productos
+  # Parámetros específicos del flujo de mensajería de Inventario
   kafka:
-    bootstrap-servers: kafka:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -26,16 +25,6 @@ spring:
       group-id: inventory-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}:${random.value}
 
 management:
   endpoints:
@@ -46,6 +35,11 @@ management:
     health:
       show-details: always
 
+# Telemetría avanzada unificada exclusiva para este módulo relacional
 logging:
   level:
-    com.logistica.inventory: DEBUG
+    com.logistica: DEBUG  # <-- Crucial para ver tus controladores e inventario
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.results.graph.AST: TRACE
+    org.hibernate.type.descriptor.jdbc.spi.JdbcTypeRegistry: TRACE

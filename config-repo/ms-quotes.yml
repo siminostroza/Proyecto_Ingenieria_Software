@@ -3,7 +3,6 @@ server:
 
 spring:
   datasource:
-    # Adaptado al contenedor unificado de MySQL y al esquema del microservicio
     url: jdbc:mysql://mysql-db:3306/db_service_quotes?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: app_user
     password: "1234"
@@ -16,9 +15,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-  # Soporte de Kafka para recibir solicitudes de presupuesto de otros módulos
+  # Flujo asíncrono completo para cotizaciones y tarifas de fletes
   kafka:
-    bootstrap-servers: kafka:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -26,16 +24,6 @@ spring:
       group-id: quotes-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}:${random.value}
 
 management:
   endpoints:
@@ -46,6 +34,12 @@ management:
     health:
       show-details: always
 
+# Telemetría avanzada unificada
 logging:
   level:
-    com.logistica.quotes: DEBUG
+    root: INFO
+    com.logistica: DEBUG  # Rastrea la lógica matemática y algoritmos de tus cotizaciones
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.results.graph.AST: TRACE
+    org.hibernate.type.descriptor.jdbc.spi.JdbcTypeRegistry: TRACE

@@ -5,12 +5,14 @@ eureka:
       defaultZone: http://eureka-server:8761/eureka/
   instance:
     # Crucial para Docker: usa la IP en lugar del nombre del contenedor
-    # Esto evita que los servicios no se encuentren entre sí en la red bridge
     prefer-ip-address: true
 
 spring:
   kafka:
     # Centralizamos Kafka aquí para que Service-Log y otros lo hereden de una vez
-    # ALINEACIÓN DE RED: Validado con compose.yml. Utiliza el listener interno 'kafka'
-    # en el puerto 29092 para la comunicación inter-container dentro de 'edificios-network'.
     bootstrap-servers: kafka:29092
+
+logging:
+  level:
+    root: INFO
+    com.logistica: DEBUG  # Muestra tus controladores y servicios de todos los MS de forma segura

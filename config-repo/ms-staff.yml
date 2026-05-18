@@ -15,15 +15,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
 
-eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
-    register-with-eureka: true
-    fetch-registry: true
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}:${random.value}
+# Toda la configuración base de Eureka e infraestructura de red se hereda limpiamente del global
 
 management:
   endpoints:
@@ -33,3 +25,13 @@ management:
   endpoint:
     health:
       show-details: always
+
+# Telemetría avanzada unificada exclusiva para este módulo relacional
+logging:
+  level:
+    root: INFO
+    com.logistica: DEBUG  # Muestra el rastreo de asignaciones de personal y choferes
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.results.graph.AST: TRACE
+    org.hibernate.type.descriptor.jdbc.spi.JdbcTypeRegistry: TRACE

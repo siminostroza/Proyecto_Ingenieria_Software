@@ -10,10 +10,7 @@ spring:
           lower-case-service-id: true # Evita conflictos si Eureka registra en mayúsculas o minúsculas
 
       # Filtro GLOBAL: Inyecta el Trace ID único para la auditoría asíncrona con ms-logs
-      # ALERTA ARQUITECTÓNICA: Usar '${random.uuid}' aquí inyecta un ID estático generado al arrancar el Gateway.
-      # Para sistemas distribuidos reales bajo Spring Cloud Gateway (WebFlux), se recomienda encarecidamente
-      # implementar un 'GlobalFilter' en código Java (ms-gateway) que genere un UUID dinámico por cada 'ServerWebExchange',
-      # o utilizar Spring Cloud Sleuth / Micrometer Tracing para propagar el "traceId" de forma nativa por HTTP y Kafka.
+      # NOTA: '${random.uuid}' genera un ID estático al arrancar. Para producción, usar un GlobalFilter en código Java.
       default-filters:
         - AddRequestHeader=X-Trace-Id, ${random.uuid}
 
@@ -39,16 +36,10 @@ spring:
           predicates:
             - Path=/api/v1/buildings/**
 
-# Configuración de Cliente Eureka (Acoplada a la red interna de Docker)
+# El bloque de Eureka se hereda del global (application.yml), pero mantenemos lo específico del host de red
 eureka:
-  client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka/
-    fetch-registry: true
-    register-with-eureka: true
   instance:
-    prefer-ip-address: true
-    hostname: api-gateway
+    hostname: brm-api-gateway
 
 # Monitoreo Actuator para verificación de mallas distribuidas
 management:
@@ -61,3 +52,10 @@ management:
       show-details: always
     gateway:
       enabled: true # Habilita la inspección de rutas activas vía /actuator/gateway/routes
+
+# CORREGIDO: Eliminadas las trazas de Hibernate para evitar el colapso de Spring WebFlux
+logging:
+  level:
+    root: INFO
+    com.logistica: DEBUG  # Permite ver el enrutamiento y filtros del Gateway
+    org.springframework.cloud.gateway: DEBUG # Te dará visibilidad total de por dónde viajan las peticiones

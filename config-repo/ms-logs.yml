@@ -1,34 +1,28 @@
 server:
-  port: 8082
+  port: 8082 # <-- CORREGIDO: Volvemos al puerto 8082 original para evitar chocar con el Gateway
 
 spring:
-  # Configuración de la Base de Datos para guardar los registros
   datasource:
-    # CORREGIDO: Cambiado 'logistica-mysql' por 'mysql-db' para alinearse con el nombre del servicio en el compose.yml
     url: jdbc:mysql://mysql-db:3306/db_service_logs?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: app_user
     password: "1234"
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
+    show-sql: true
 
-  # Configuración del Consumidor de Kafka
   kafka:
-    # Nota: bootstrap-servers se hereda del global, pero se mantiene la simetría explícita
-    bootstrap-servers: kafka:29092
     consumer:
       group-id: logs-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
-# Registro en Eureka
-eureka:
-  client:
-    service-url:
-      # CORREGIDO: Cambiado 'logistica-eureka' por 'eureka-server' para garantizar que el DNS de Docker
-      # localice el servidor de descubrimiento y el microservicio no quede invisible.
-      defaultZone: http://eureka-server:8761/eureka/
-  instance:
-    prefer-ip-address: true
+logging:
+  level:
+    root: INFO
+    com.logistica: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.orm.results.graph.AST: TRACE
+    org.hibernate.type.descriptor.jdbc.spi.JdbcTypeRegistry: TRACE

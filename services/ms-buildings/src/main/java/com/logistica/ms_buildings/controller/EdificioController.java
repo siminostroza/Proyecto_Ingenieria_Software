@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.logistica.ms_buildings.model.Edificio;
@@ -47,13 +48,13 @@ public class EdificioController {
     @PutMapping("/{id}")
     public ResponseEntity<Edificio> actualizarEdificio(
             @Valid @RequestBody Edificio datosActualizados,
-            @PathVariable Long id) { 
+            @RequestParam Long id) { 
         return ResponseEntity.ok(edificioService.actualizarEdificio(id, datosActualizados));
     }
         
     // ELIMINAR
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarEdificio(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarEdificio(@RequestParam Long id) {
         edificioService.eliminarEdificio(id);
         return ResponseEntity.noContent().build();
     }

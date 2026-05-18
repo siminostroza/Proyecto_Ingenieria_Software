@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.logistica.ms_quotes.model.Cotizacion;
@@ -46,13 +47,13 @@ public class CotizacionController {
     @PutMapping("/{id}")
     public ResponseEntity<Cotizacion> actualizarCotizacion(
             @Valid @RequestBody Cotizacion datosActualizados,
-            @PathVariable Long id) {
+            @RequestParam Long id) {
         return ResponseEntity.ok(cotizacionService.actualizarCotizacion(id, datosActualizados));
     }
 
     // ELIMINAR
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarCotizacion(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarCotizacion(@RequestParam Long id) {
         cotizacionService.eliminarCotizacion(id);
         return ResponseEntity.noContent().build();
     }

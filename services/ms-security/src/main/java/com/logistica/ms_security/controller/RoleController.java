@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.logistica.ms_security.model.Role;
@@ -49,14 +50,14 @@ public class RoleController {
     @PutMapping("/{id}")
     public ResponseEntity<Role> actualizarRole(
     @Valid @RequestBody Role datosActualizados,
-    @PathVariable Long id) { 
+    @RequestParam Long id) { 
         return ResponseEntity.ok(roleService.actualizarRole(id, datosActualizados));
     }
         
     
     // ELIMINAR
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarRole(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminarRole(@RequestParam Long id) {
         roleService.eliminarRole(id);
         return ResponseEntity.noContent().build();
     }

@@ -1,4 +1,5 @@
-package com.logistica.ms_security.exception;
+package com.logistica.ms_quotes.exception;
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,10 +12,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.logistica.ms_security.exception.entity.EntityBadRequestException;
-import com.logistica.ms_security.exception.entity.EntityConflictException;
-import com.logistica.ms_security.exception.entity.EntityCreationException;
-import com.logistica.ms_security.exception.entity.EntityNotFoundException;
+import com.logistica.ms_quotes.exception.entity.EntityBadRequestException;
+import com.logistica.ms_quotes.exception.entity.EntityConflictException;
+import com.logistica.ms_quotes.exception.entity.EntityCreationException;
+import com.logistica.ms_quotes.exception.entity.EntityNotFoundException;
 
 import feign.FeignException; // Asegúrate de incluir la dependencia de Feign en las excepciones si cruzas llamadas
 

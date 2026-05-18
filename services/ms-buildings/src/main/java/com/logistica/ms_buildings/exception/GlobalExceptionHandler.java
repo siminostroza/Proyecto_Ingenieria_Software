@@ -7,8 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.logistica.ms_buildings.exception.edificio.EdificioConflictException;
-import com.logistica.ms_buildings.exception.edificio.EdificioNotFoundException;
+import com.logistica.ms_buildings.exception.entity.EntityConflictException;
+import com.logistica.ms_buildings.exception.entity.EntityNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -31,8 +31,8 @@ public class GlobalExceptionHandler {
      * 
      */
     // ---- USER NOT FOUND ----
-    @ExceptionHandler(EdificioNotFoundException.class)
-    public ResponseEntity<Object> handleUserNotFound(EdificioNotFoundException ex) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFound(EntityNotFoundException ex) {
         // El 'Map' es la construcción de un body para retornarlo
         Map<String, Object> body = new HashMap<>();
         // Aquí ingresamos manualmente la información que queremos devolver
@@ -52,8 +52,8 @@ public class GlobalExceptionHandler {
     }
 
     // ---- USER CONFLICT ----
-    @ExceptionHandler(EdificioConflictException.class)
-    public ResponseEntity<Object> handleUserConflict(EdificioConflictException ex) {
+    @ExceptionHandler(EntityConflictException.class)
+    public ResponseEntity<Object> handleUserConflict(EntityConflictException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("message", ex.getMessage());

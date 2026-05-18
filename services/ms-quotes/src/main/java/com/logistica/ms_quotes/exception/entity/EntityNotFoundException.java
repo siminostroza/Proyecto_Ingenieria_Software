@@ -1,4 +1,4 @@
-package com.logistica.ms_security.exception.entity;
+package com.logistica.ms_quotes.exception.entity;
 
 /**
  * EXCEPCIÓN DE NEGOCIO: RECURSO NO ENCONTRADO (404)

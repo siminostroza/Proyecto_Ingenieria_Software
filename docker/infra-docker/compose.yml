@@ -207,6 +207,76 @@ services:
       - edificios-network
     restart: on-failure
 
+  ms-buildings:
+    build:
+      context: ../../services/ms-buildings
+      dockerfile: Dockerfile
+    container_name: brm-ms-buildings
+    ports:
+      - "8084:8084"  # Puerto HOST:CONTENEDOR asignado
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      # Cambiado a SPRING_CONFIG_IMPORT y apuntando al host real: config-server
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      # Apuntando al host real de descubrimiento: eureka-server
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - edificios-network
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+
+  ms-staff:
+    build:
+      context: ../../services/ms-staff
+      dockerfile: Dockerfile
+    container_name: brm-ms-staff
+    ports:
+      - "8085:8085"  # Puerto HOST:CONTENEDOR asignado
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    networks:
+      - edificios-network  # Acoplado a la red interna real de tu infraestructura
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    restart: on-failure
+
+  brm-ms-fleet:
+    image: brm-ms-fleet:latest
+    container_name: brm-ms-fleet
+    build:
+      context: ../../services/ms-fleet
+      dockerfile: Dockerfile
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      mysql-db:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - edificios-network
+
 networks:
   edificios-network:
     driver: bridge

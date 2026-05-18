@@ -18,6 +18,9 @@ infraestructure/api-gateway
 services/ms-auth
 services/ms-logs
 services/ms-users
+services/ms-buildings
+services/ms-staff
+services/ms-fleet
 "
 
 # --- DETECCIÓN DINÁMICA DE ARGUMENTOS ---

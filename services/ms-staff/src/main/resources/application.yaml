@@ -1,3 +1,5 @@
 spring:
   application:
     name: ms-staff
+  config:
+    import: "optional:configserver:http://brm-config-server:8888/"

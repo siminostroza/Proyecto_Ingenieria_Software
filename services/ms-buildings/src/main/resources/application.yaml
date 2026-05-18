@@ -1,3 +1,5 @@
 spring:
   application:
     name: ms-buildings
+  config:
+    import: "optional:configserver:http://brm-config-server:8888/"

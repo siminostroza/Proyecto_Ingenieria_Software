@@ -18,41 +18,26 @@ spring:
         - AddRequestHeader=X-Trace-Id, ${random.uuid}
 
       routes:
-        # 1. Núcleo de Autenticación y Credenciales
         - id: ms-auth
           uri: lb://ms-auth
           predicates:
             - Path=/api/auth/**
 
-        # 2. Gestión de Perfiles de Usuarios
         - id: ms-users
           uri: lb://ms-users
           predicates:
             - Path=/api/users/**
 
-        # 3. Tu Nuevo Microservicio: Motor de Seguridad y Permisos (RBAC)
-        # NOTA: Descomentar únicamente cuando compiles e integres ms-security a la red
-        #- id: ms-security
-        #  uri: lb://ms-security
-        #  predicates:
-        #    - Path=/api/security/**
-
-        # 4. Auditoría y Trazabilidad de Logs Centralizados
         - id: ms-logs
           uri: lb://ms-logs
           predicates:
             - Path=/api/logs/**
-
-        # --- EXTENSIONES OPERATIVAS FUTURAS (Mapeadas según informe técnico) ---
-        #- id: ms-logistics
-        #  uri: lb://ms-logistics
-        #  predicates:
-        #    - Path=/api/logistics/**
-
-        #- id: ms-workorders
-        #  uri: lb://ms-workorders
-        #  predicates:
-        #    - Path=/api/workorders/**
+        
+        # Enrutamiento hacia Gestión de Edificios
+        - id: ms-buildings
+          uri: lb://ms-buildings
+          predicates:
+            - Path=/api/v1/buildings/**
 
 # Configuración de Cliente Eureka (Acoplada a la red interna de Docker)
 eureka:

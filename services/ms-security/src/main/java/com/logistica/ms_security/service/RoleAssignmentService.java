@@ -2,6 +2,7 @@ package com.logistica.ms_security.service;
 
 import java.util.List;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import com.logistica.ms_security.exception.entity.EntityBadRequestException;
@@ -29,7 +30,7 @@ public class RoleAssignmentService {
     }
 
     @Transactional
-    public RoleAssignment actualizarRoleAssignment(Long id, RoleAssignment assignment) {
+    public RoleAssignment actualizarRoleAssignment(@NonNull Long id, RoleAssignment assignment) {
         RoleAssignment assignmentExistente = roleAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se puede actualizar. La asignación con ID " + id + " no existe."));
 
@@ -44,7 +45,7 @@ public class RoleAssignmentService {
     }
 
     @Transactional
-    public void eliminarRoleAssignment(Long id) {
+    public void eliminarRoleAssignment(@NonNull Long id) {
         if (!roleAssignmentRepository.existsById(id)) {
             throw new EntityNotFoundException("No se encontró la asignación a eliminar.");
         }

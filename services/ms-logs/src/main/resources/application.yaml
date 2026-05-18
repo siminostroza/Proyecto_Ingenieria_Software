@@ -6,7 +6,7 @@ spring:
     name: ms-logs
   config:
     # Usamos brm-config-server porque dentro de Docker se comunican por el nombre del contenedor
-    import: "optional:configserver:http://brm-config-server:8888/"
+    import: "optional:configserver:http://config-server:8888/"
   cloud:
     config:
       # evita que el ms se levante si el config-server no responde

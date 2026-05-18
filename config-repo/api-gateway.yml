@@ -34,7 +34,22 @@ spring:
         - id: ms-buildings
           uri: lb://ms-buildings
           predicates:
-            - Path=/api/v1/buildings/**
+            - Path=/api/edificios/**
+
+        - id: ms-quotes
+          uri: lb://ms-quotes
+          predicates:
+            - Path=/api/cotizaciones/**
+
+        - id: ms-security
+          uri: lb://ms-security
+          predicates:
+            - Path=/api/roles/**
+
+        - id: ms-fleet
+          uri: lb://ms-fleet
+          predicates:
+            - Path=/api/vehiculos/**
 
 # El bloque de Eureka se hereda del global (application.yml), pero mantenemos lo específico del host de red
 eureka:

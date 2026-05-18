@@ -45,6 +45,7 @@ spring:
           uri: lb://ms-security
           predicates:
             - Path=/api/roles/**
+            - Path=/api/role-assignments/**
 
         - id: ms-fleet
           uri: lb://ms-fleet

@@ -350,6 +350,192 @@ services:
       - edificios-network
     restart: on-failure
 
+  brm-ms-payments:
+    build:
+      context: ../../services/ms-payments
+      dockerfile: Dockerfile
+    container_name: brm-ms-payments
+    image: brm-ms-payments:latest
+    ports:
+      - "8091:8091"  # Puerto HOST:CONTENEDOR asignado secuencialmente pero se evita el 8090 porque podría ser problematico
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - edificios-network
+    restart: on-failure
+  
+  brm-ms-billing:
+    build:
+      context: ../../services/ms-billing
+      dockerfile: Dockerfile
+    container_name: brm-ms-billing
+    image: brm-ms-billing:latest
+    ports:
+      - "8092:8092"  # Puerto HOST:CONTENEDOR asignado correlativamente
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - edificios-network
+    restart: on-failure
+
+  brm-ms-logistics:
+    build:
+      context: ../../services/ms-logistics
+      dockerfile: Dockerfile
+    container_name: brm-ms-logistics
+    image: brm-ms-logistics:latest
+    ports:
+      - "8093:8093"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - edificios-network
+    restart: on-failure
+
+  brm-ms-notifications:
+    build:
+      context: ../../services/ms-notifications
+      dockerfile: Dockerfile
+    container_name: brm-ms-notifications
+    image: brm-ms-notifications:latest
+    ports:
+      - "8094:8094"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks:
+      - edificios-network
+    restart: on-failure
+
+  brm-ms-workorders:
+    build:
+      context: ../../services/ms-workorders
+      dockerfile: Dockerfile
+    container_name: brm-ms-workorders
+    image: brm-ms-workorders:latest
+    ports:
+      - "8097:8097"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - edificios-network
+    restart: on-failure
+  
+  brm-ms-schedule:
+    build:
+      context: ../../services/ms-schedule
+      dockerfile: Dockerfile
+    container_name: brm-ms-schedule
+    image: brm-ms-schedule:latest
+    ports:
+      - "8098:8098"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - edificios-network
+    restart: on-failure
+  
+  brm-ms-purchase:
+    build:
+      context: ../../services/ms-purchase
+      dockerfile: Dockerfile
+    container_name: brm-ms-purchase
+    image: brm-ms-purchase:latest
+    ports:
+      - "8096:8096"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - edificios-network
+    restart: on-failure
+
+  brm-ms-price-engine:
+    build:
+      context: ../../services/ms-price-engine
+      dockerfile: Dockerfile
+    container_name: brm-ms-price-engine
+    image: brm-ms-price-engine:latest
+    ports:
+      - "8095:8095"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - edificios-network
+    restart: on-failure
+
 networks:
   edificios-network:
     driver: bridge

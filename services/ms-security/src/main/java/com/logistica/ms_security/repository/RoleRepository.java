@@ -5,6 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.logistica.ms_security.model.Role;
 
 public interface RoleRepository extends JpaRepository<Role, Long>{
-    public Boolean existsById();
-    public Boolean existsByRolName();
+    public Boolean existsByRolName(String rolName);
 }

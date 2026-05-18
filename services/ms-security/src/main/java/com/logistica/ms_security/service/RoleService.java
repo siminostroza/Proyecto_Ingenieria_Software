@@ -21,7 +21,7 @@ public class RoleService {
 
     // CREAR
     public Role crearRole(Role role) {
-        if (role.getId() != null && roleRepository.existsById(role.getId())) {
+        if (role.getId() != null) {
             throw new EntityConflictException("Ya existe un rol con este ID");
         }
         return roleRepository.save(role);

@@ -6,6 +6,7 @@ services:
     image: mysql:8.0
     container_name: logistica-mysql
     restart: always
+    command: --default-authentication-plugin=mysql_native_password --max-connections=500
     environment:
       - MYSQL_ROOT_PASSWORD=root
     ports:
@@ -28,9 +29,14 @@ services:
     container_name: brm-adminer
     restart: always
     ports:
-      - "8880:8080" #Para entrar debo poner mysql-db
+      - "8880:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=mysql-db # Deja pre-cargado el host correcto
     networks:
       - edificios-network
+    depends_on:
+      mysql-db:
+        condition: service_healthy
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
@@ -48,7 +54,7 @@ services:
           "-c",
           "timeout 1s bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/2181'",
         ]
-      interval: 5s
+      interval: 10s
       timeout: 2s
       retries: 5
       start_period: 5s # Le da 5 segundos de gracia para arrancar antes de empezar a testear
@@ -63,7 +69,7 @@ services:
         condition: service_healthy # Obliga a esperar la salud real de Zookeeper
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: brm-zookeeper:2181
       # CORRECCIÓN REALIZADA: Se unificó el listener interno a "kafka:29092" para coincidir
       # exactamente con el nombre de este servicio en el stack de Docker Compose, permitiendo
       # que ms-users y ms-auth resuelvan el DNS interno sin errores.
@@ -146,7 +152,9 @@ services:
     networks:
       - edificios-network
 
-  ms-auth:
+  # --- MICROSERVICIOS NORMALIZADOS CON EL PREFIJO brm- ---
+
+  brm-ms-auth:
     build: ../../services/ms-auth
     container_name: brm-ms-auth
     ports:
@@ -165,7 +173,7 @@ services:
     networks:
       - edificios-network
 
-  ms-logs:
+  brm-ms-logs:
     build: ../../services/ms-logs
     container_name: brm-ms-logs
     ports:
@@ -186,7 +194,7 @@ services:
       - edificios-network
     restart: on-failure
 
-  ms-users:
+  brm-ms-users:
     build: ../../services/ms-users
     container_name: brm-ms-users
     ports:
@@ -207,18 +215,16 @@ services:
       - edificios-network
     restart: on-failure
 
-  ms-buildings:
+  brm-ms-buildings:
     build:
       context: ../../services/ms-buildings
       dockerfile: Dockerfile
     container_name: brm-ms-buildings
     ports:
-      - "8084:8084"  # Puerto HOST:CONTENEDOR asignado
+      - "8084:8084"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      # Cambiado a SPRING_CONFIG_IMPORT y apuntando al host real: config-server
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
-      # Apuntando al host real de descubrimiento: eureka-server
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
     networks:
       - edificios-network
@@ -230,20 +236,19 @@ services:
       eureka-server:
         condition: service_healthy
 
-
-  ms-staff:
+  brm-ms-staff:
     build:
       context: ../../services/ms-staff
       dockerfile: Dockerfile
     container_name: brm-ms-staff
     ports:
-      - "8085:8085"  # Puerto HOST:CONTENEDOR asignado
+      - "8085:8085"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
     networks:
-      - edificios-network  # Acoplado a la red interna real de tu infraestructura
+      - edificios-network
     depends_on:
       mysql-db:
         condition: service_healthy
@@ -276,7 +281,7 @@ services:
         condition: service_healthy
     networks:
       - edificios-network
-  
+
   brm-ms-security:
     build:
       context: ../../services/ms-security
@@ -299,7 +304,7 @@ services:
     networks:
       - edificios-network
     restart: on-failure
-  
+
   brm-ms-quotes:
     build:
       context: ../../services/ms-quotes
@@ -324,7 +329,7 @@ services:
     networks:
       - edificios-network
     restart: on-failure
-  
+
   brm-ms-inventory:
     build:
       context: ../../services/ms-inventory
@@ -357,7 +362,7 @@ services:
     container_name: brm-ms-payments
     image: brm-ms-payments:latest
     ports:
-      - "8091:8091"  # Puerto HOST:CONTENEDOR asignado secuencialmente pero se evita el 8090 porque podría ser problematico
+      - "8091:8091"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
@@ -372,7 +377,7 @@ services:
     networks:
       - edificios-network
     restart: on-failure
-  
+
   brm-ms-billing:
     build:
       context: ../../services/ms-billing
@@ -380,7 +385,7 @@ services:
     container_name: brm-ms-billing
     image: brm-ms-billing:latest
     ports:
-      - "8092:8092"  # Puerto HOST:CONTENEDOR asignado correlativamente
+      - "8092:8092"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888/
@@ -466,7 +471,7 @@ services:
     networks:
       - edificios-network
     restart: on-failure
-  
+
   brm-ms-schedule:
     build:
       context: ../../services/ms-schedule
@@ -489,7 +494,7 @@ services:
     networks:
       - edificios-network
     restart: on-failure
-  
+
   brm-ms-purchase:
     build:
       context: ../../services/ms-purchase

@@ -29,7 +29,7 @@ spring:
           uri: lb://ms-logs
           predicates:
             - Path=/api/logs/**
-        
+
         # Enrutamiento hacia Gestión de Edificios
         - id: ms-buildings
           uri: lb://ms-buildings
@@ -44,8 +44,7 @@ spring:
         - id: ms-security
           uri: lb://ms-security
           predicates:
-            - Path=/api/roles/**
-            - Path=/api/role-assignments/**
+            - Path=/api/roles/**,/api/role-assignments/**
 
         - id: ms-fleet
           uri: lb://ms-fleet
@@ -73,5 +72,5 @@ management:
 logging:
   level:
     root: INFO
-    com.logistica: DEBUG  # Permite ver el enrutamiento y filtros del Gateway
+    com.logistica: DEBUG # Permite ver el enrutamiento y filtros del Gateway
     org.springframework.cloud.gateway: DEBUG # Te dará visibilidad total de por dónde viajan las peticiones
